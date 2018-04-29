@@ -1,41 +1,35 @@
 ## Contents
-- [Introduction](#intro)
-- [Background](#bg)
-    - [IR Data Formats](#dataformat)
-    - [Types of IR Remotes](#remotetypes)
-        - [Types of IR Remotes](#singlecommand)
-        - [All at Once Remotes](#allatonce)
-- [Reading IR Commands](#readingircommands)
-- [Determining the Protocol](#protocol)
+- [Introduction](#introduction)
+- [Background](#background)
+    - [IR Data Formats](#ir-data-formats)
+    - [Types of IR Remotes](#types-of-ir-remotes)
+        - [Types of IR Remotes](#single-command-remotes)
+        - [All at Once Remotes](#all-at-once-remotes)
+- [Reading IR Commands](#reading-ir-commands)
+- [Determining the Protocol](#determining-the-protocol)
 
-<a name='intro'/>
 ## Introduction
 
 This is not a full guide to reverse engineering IR remote controls.  This guide outlines the process I went through to create this controller, and provides some guidance on adapting it for your application.
 
-<a name='bg'/>
 ## Background
 
 This guide will not go into the very basics behind IR communication, check out [this guide](http://www.learn.sparkfun.com/tutorials/ir-communication) by SparkFun to get the basics of IR communication.
 
-<a name='dataformat'/>
 ### IR Data Formats
 
 There's a few different types of data formats for IR remote controls, and a few common carrier frequencies. The most common carrier frequency for IR remotes is 38kHz, it is usually a good idea to start there.
 
 [This document](http://www.vishay.com/docs/80071/dataform.pdf) by VISHAY covers the data formats and carrier frequencies that you are likely to come across when reverse engineering an IR remote control.
 
-<a name='remotetypes'/>
 ### Types of IR Remotes
 
 There are two common types of IR remotes, single command remotes and all at once remotes
 
-<a name='singlecommand'/>
 #### Single Command Remotes
 
 Most remotes are single command remotes that send an 8-bit value to send up to 256 unique commands.  These remotes typically do not store the device state on the remote (e.g. A TV remote does not store the volume level of the TV), they simply indicate to the device to change its current state (e.g. increasing the volume on the TV). 
 
-<a name='allatonce'/>
 #### All at Once Remotes
 
 All at once remotes store the device state on the remote, and send the desired device state to be set.  For example, an all at once TV remote would store the volume level and instead of telling the TV to increase or decrease the volume it would send an absolute number (e.g. set the volume to 50%) to the TV.
@@ -44,7 +38,6 @@ The codes are significantly longer because they send all of states all at once, 
 
 All at once remotes are most commonly used for air conditioners, and fire places, but it turns out that my fan uses this type of remote too.  The giveaway was that it had a LCD that showed the fan state; this was confirmed by setting a timer with the buttons physically located on the fan, and then setting a timer using the remote.  Whatever state was stored on the fan would be reset with the value stored on the remote.
 
-<a name='readingircommands'/>
 ## Reading IR Commands
 
 Starting with a Raspberry Pi 3 wire up a 38kHz receiver (e.g. the [VISHAY TSSP58038](http://www.vishay.com/docs/82479/tssp58038.pdf)) with pin 1 connected to GPIO 23 (pin 16) on the pi, pin 2 connected to ground, and pin 3 connected to 3.3V.  I used a [Pi cobbler breakout](http://www.adafruit.com/product/2029) to make the wiring easier.
@@ -128,7 +121,6 @@ When the power button on my fan remote is pressed I get an output similar to thi
 
 Referencing [VISHAY's IR data formats data sheet](http://www.vishay.com/docs/80071/dataform.pdf) from before it is clear that the fan remote uses the NEC code because the leader code consists of a 9000μs burst followed by a 4500μs pause.
 
-<a name='protocol'/>
 ## Determining the Protocol
 
 Now that the data format is determined the previous script can be improved to print the formatted code from the remote.
