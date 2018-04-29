@@ -1,0 +1,99 @@
+input_boolean:
+  fan_oscillate:
+    name: Oscillate
+    initial: off
+    icon: mdi:loop
+  fan_power:
+    name: Power
+    initial: off
+    icon: mdi:power
+
+input_number:
+  fan_speed:
+    name: Speed
+    icon: mdi:weather-windy
+    initial: 0
+    min: 0
+    max: 3
+    step: 1
+  fan_timer:
+    name: Timer
+    icon: mdi:timer
+    initial: 0
+    min: 0
+    max: 15
+    step: 1
+  fan_mode:
+    name: Mode
+    icon: mdi:delta
+    initial: 0
+    min: 0
+    max: 2
+    step: 1
+
+bedroom_fan:
+  name: Bedroom Fan
+  control: hidden
+  entities:
+    - input_boolean.fan_power
+    - input_boolean.fan_oscillate
+    - input_number.fan_speed
+    - input_number.fan_timer
+    - input_number.fan_mode
+
+# publish state change to device
+automation:
+  - alias: Set Fan Speed
+    hide_entity: True
+    trigger:
+      platform: state
+      entity_id: input_number.fan_speed
+    action:
+      - service: mqtt.publish
+        data_template:
+          topic: "/home/bedroom/fan/speed"
+          payload: '{{ states.input_number.fan_speed.state | int }}'
+
+  - alias: Set Fan Mode
+    hide_entity: True
+    trigger:
+      platform: state
+      entity_id: input_number.fan_mode
+    action:
+      - service: mqtt.publish
+        data_template:
+          topic: "/home/bedroom/fan/mode"
+          payload: '{{ states.input_number.fan_mode.state | int }}'
+
+  - alias: Set Fan Timer
+    hide_entity: True
+    trigger:
+      platform: state
+      entity_id: input_number.fan_timer
+    action:
+      - service: mqtt.publish
+        data_template:
+          topic: "/home/bedroom/fan/timer"
+          payload: '{{ states.input_number.fan_timer.state | int }}'
+
+  - alias: Set Fan Power
+    hide_entity: True
+    trigger:
+      platform: state
+      entity_id: input_boolean.fan_power
+    action:
+      - service: mqtt.publish
+        data_template:
+          topic: "/home/bedroom/fan/power"
+          payload: '{% if is_state("input_boolean.fan_power", "on") %}1{% else %}0{% endif %}'
+
+  - alias: Set Fan Oscillation
+    hide_entity: True
+    trigger:
+      platform: state
+      entity_id: input_boolean.fan_oscillate
+    action:
+      - service: mqtt.publish
+        data_template:
+          topic: "/home/bedroom/fan/oscillate"
+          payload: '{% if is_state("input_boolean.fan_oscillate", "on") %}1{% else %}0{% endif %}'
