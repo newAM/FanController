@@ -75,8 +75,8 @@ void sendCommand (
 
 // sends an byte over the IR LED, big-endian
 void sendByte (
-    uint8_t val,   // byte to transmit
-    uint8_t length // bit length of val
+    const uint8_t val, // byte to transmit
+    uint8_t length     // bit length of val
 )
 {
     // iterate over bits in the byte
@@ -96,7 +96,7 @@ void sendByte (
 // a pause of  546.4us for a '0' (1125us pulse distance)
 // a pause of 1671.4us for a '1' (2250us pulse distance)
 void sendBit (
-    bool bit // value of the bit to send
+    const bool bit // value of the bit to send
 )
 {
     // send the constant IR burst

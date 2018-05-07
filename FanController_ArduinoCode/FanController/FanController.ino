@@ -23,7 +23,6 @@
 #define TOPIC_TIMER TOPIC_BASE "/timer"
 #define TOPIC_POWER TOPIC_BASE "/power"
 #define TOPIC_OSC   TOPIC_BASE "/oscillate"
-#define TOPIC_TEMP  TOPIC_BASE "/temp"
 
 // client objects
 EthernetClient ethClient;
@@ -101,6 +100,11 @@ void reconnect()
 // callback function for handling new messages on subscribed topics
 void callback(char* topic, byte* payload, unsigned int length)
 {
+    // copy payload
+    byte* p = (byte*) malloc(length);
+    memcpy(p, payload, length);
+    payload = "";
+
     // fan control variables
     static uint8_t speed = 0;
     static uint8_t mode  = 0;
@@ -109,26 +113,29 @@ void callback(char* topic, byte* payload, unsigned int length)
     static uint8_t osc   = 0;
 
     // set the variables
-    if (!strcmp(topic, TOPIC_SPEED))
+    if (strcmp(topic, TOPIC_SPEED) == 0)
     {
-        sscanf(payload, "%u", &speed);
+        speed = atoi(p);
     }
-    else if (!strcmp(topic, TOPIC_MODE))
+    else if (strcmp(topic, TOPIC_MODE) == 0)
     {
-        sscanf(payload, "%u", &mode);
+        mode = atoi(p);
     }
-    else if (!strcmp(topic, TOPIC_TIMER))
+    else if (strcmp(topic, TOPIC_TIMER) == 0)
     {
-        sscanf(payload, "%u", &timer);
+        timer = atoi(p);
     }
-    else if (!strcmp(topic, TOPIC_POWER))
+    else if (strcmp(topic, TOPIC_POWER) == 0)
     {
-        sscanf(payload, "%u", &power);
+        power = atoi(p);
     }
-    else if (!strcmp(topic, TOPIC_OSC))
+    else if (strcmp(topic, TOPIC_OSC) == 0)
     {
-        sscanf(payload, "%u", &osc);
+        osc = atoi(p);
     }
+
+    // free memory
+    free(p);
 
     // send IR command
     sendCommand(speed, mode, timer, power, osc);
