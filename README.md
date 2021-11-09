@@ -26,7 +26,7 @@ The controller takes the states of the power, oscillation, mode, timer, and spee
 * FanController_Media - photos
 
 ## Software Used
-* [KiCad](http://kicad-pcb.org/)
+* [KiCad](http://kicad.org/)
 * [Arduino IDE](https://www.arduino.cc/en/Main/Software)
 * [OpenSCAD](http://www.openscad.org/)
 * [Libre Office](https://www.libreoffice.org/)
